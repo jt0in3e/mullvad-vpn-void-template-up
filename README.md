@@ -1,6 +1,15 @@
 ## Usage
 
-clone this repo into your `void-packages/srcpkgs` folder with the following command `git clone https://git.deadzone.lol/Wizzard/mullvad-vpn-void mullvad-vpn` (it must be named mullvad-vpn)
+clone this repo into your `void-packages/srcpkgs` folder with the following commands:
+
+```bash
+cd void-packages/srcpkgs
+mkdir -p mullvad-vpn
+cd mullvad-vpn
+git clone https://github.com/jt0in3e/mullvad-vpn-void-template-up.git
+```
+
+(it must be named mullvad-vpn)
 
 ## Post Installation
 
