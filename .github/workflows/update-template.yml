@@ -37,14 +37,6 @@ jobs:
         if: steps.get_release.outputs.version != steps.check_version.outputs.current_version
         id: download_and_verify
         run: |
-          curl -Lo mullvad.deb "${{ steps.get_release.outputs.deb_url }}"
-          SHA256=$(sha256sum mullvad.deb | awk '{print $1}')
-          echo "sha256=${SHA256}" >> "$GITHUB_OUTPUT"
-
-      - name: Download and Calculate Checksum
-        if: steps.get_release.outputs.version != steps.check_version.outputs.current_version
-        id: download_and_verify
-        run: |
           if [ -z "${{ steps.get_release.outputs.deb_url }}" ]; then
           echo "❌ .deb URL is empty — check asset name or release format."
           exit 1
