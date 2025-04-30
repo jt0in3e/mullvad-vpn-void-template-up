@@ -22,7 +22,7 @@ jobs:
           API_URL="https://api.github.com/repos/mullvad/mullvadvpn-app/releases/latest"
           RESPONSE=$(curl -s $API_URL)
           VERSION=$(echo "$RESPONSE" | jq -r '.tag_name')
-          DEB_URL=$(echo "$RESPONSE" | jq -r '.assets[] | select(.name | endswith("_amd64.deb")) | .browser_download_url')
+          DEB_URL=$(echo "$RESPONSE" | jq -r '.assets[] | select(.name | test(".*amd64.*\\.deb$")) | .browser_download_url')
 
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
           echo "deb_url=${DEB_URL}" >> "$GITHUB_OUTPUT"
@@ -40,6 +40,20 @@ jobs:
           curl -Lo mullvad.deb "${{ steps.get_release.outputs.deb_url }}"
           SHA256=$(sha256sum mullvad.deb | awk '{print $1}')
           echo "sha256=${SHA256}" >> "$GITHUB_OUTPUT"
+
+      - name: Download and Calculate Checksum
+        if: steps.get_release.outputs.version != steps.check_version.outputs.current_version
+        id: download_and_verify
+        run: |
+          if [ -z "${{ steps.get_release.outputs.deb_url }}" ]; then
+          echo "❌ .deb URL is empty — check asset name or release format."
+          exit 1
+          fi
+
+          curl -Lo mullvad.deb "${{ steps.get_release.outputs.deb_url }}"
+          SHA256=$(sha256sum mullvad.deb | awk '{print $1}')
+          echo "sha256=${SHA256}" >> "$GITHUB_OUTPUT"
+
 
       - name: Update Template File
         if: steps.get_release.outputs.version != steps.check_version.outputs.current_version
