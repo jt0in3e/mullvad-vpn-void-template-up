@@ -20,10 +20,17 @@ jobs:
         id: get_release
         run: |
           API_URL="https://api.github.com/repos/mullvad/mullvadvpn-app/releases/latest"
-          RESPONSE=$(curl -s $API_URL)
+          RESPONSE=$(curl -s "$API_URL")
+      
+          echo "Full release asset list for debugging:"
+          echo "$RESPONSE" | jq '.assets[].name'
+      
           VERSION=$(echo "$RESPONSE" | jq -r '.tag_name')
           DEB_URL=$(echo "$RESPONSE" | jq -r '.assets[] | select(.name | test(".*amd64.*\\.deb$")) | .browser_download_url')
-
+      
+          echo "Parsed version: $VERSION"
+          echo "Detected .deb URL: $DEB_URL"
+      
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
           echo "deb_url=${DEB_URL}" >> "$GITHUB_OUTPUT"
 
